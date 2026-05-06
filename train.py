@@ -1,12 +1,3 @@
-#!/usr/bin/env python3
-"""
-train.py — Isaac Lab Soccer Training (Isaac Lab 2.x)
-=====================================================
-Run from IsaacLab directory:
-  .\isaaclab.bat -p C:\IsaacLab\soccer\train.py --num_envs 1024
-  .\isaaclab.bat -p C:\IsaacLab\soccer\train.py --num_envs 1024 --play --checkpoint runs\soccer\<ts>\model_5000.pt
-"""
-
 import argparse
 import os
 import sys
@@ -25,7 +16,6 @@ args, _ = parser.parse_known_args()
 app_launcher   = AppLauncher(args)
 simulation_app = app_launcher.app
 
-# ── Post-launch imports ───────────────────────────────────────────────────────
 from isaaclab_rl.rsl_rl import RslRlVecEnvWrapper
 from rsl_rl.runners import OnPolicyRunner
 
@@ -33,17 +23,13 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from soccer_env import SoccerEnv, SoccerEnvCfg
 
 
-# ── PPO config (plain dict — works with all rsl_rl versions) ─────────────────
 def make_runner_cfg(max_iters: int) -> dict:
     return {
-        # ── Observation groups ────────────────────────────────────────
-        # Must match keys returned by _get_observations() → {"policy": obs}
         "obs_groups": {
             "actor":  ["policy"],
             "critic": ["policy"],
         },
 
-        # ── Actor — outputs stochastic actions via GaussianDistribution ─
         "actor": {
             "class_name":       "rsl_rl.models.MLPModel",
             "hidden_dims":      [256, 128, 64],
@@ -54,7 +40,6 @@ def make_runner_cfg(max_iters: int) -> dict:
             },
         },
 
-        # ── Critic — outputs deterministic value estimate ─────────────
         "critic": {
             "class_name":       "rsl_rl.models.MLPModel",
             "hidden_dims":      [256, 128, 64],
@@ -62,7 +47,6 @@ def make_runner_cfg(max_iters: int) -> dict:
             "obs_normalization": False,
         },
 
-        # ── PPO (keys match PPO.__init__ params exactly) ──────────────
         "algorithm": {
             "class_name":                      "rsl_rl.algorithms.PPO",
             "num_learning_epochs":             8,
@@ -81,10 +65,8 @@ def make_runner_cfg(max_iters: int) -> dict:
             "normalize_advantage_per_mini_batch": False,
         },
 
-        # ── Multi-GPU — pass None to disable (matches multi_gpu_cfg=None default) 
         "multi_gpu": None,
 
-        # ── Runner ────────────────────────────────────────────────────
         "num_steps_per_env": 24,
         "max_iterations":    max_iters,
         "save_interval":     100,
@@ -95,7 +77,6 @@ def make_runner_cfg(max_iters: int) -> dict:
     }
 
 
-# ── Environment factory ───────────────────────────────────────────────────────
 def make_env(num_envs: int) -> RslRlVecEnvWrapper:
     cfg                   = SoccerEnvCfg()
     cfg.num_envs          = num_envs
@@ -105,7 +86,6 @@ def make_env(num_envs: int) -> RslRlVecEnvWrapper:
     return RslRlVecEnvWrapper(env)
 
 
-# ── Train ─────────────────────────────────────────────────────────────────────
 def train(args):
     device  = "cuda" if torch.cuda.is_available() else "cpu"
     env     = make_env(args.num_envs)
@@ -137,7 +117,6 @@ def train(args):
     print("Training complete.")
 
 
-# ── Play ──────────────────────────────────────────────────────────────────────
 def play(args):
     if not args.checkpoint:
         print("ERROR: --play requires --checkpoint <path>")
@@ -183,7 +162,6 @@ def play(args):
     env.close()
 
 
-# ── Entry point ───────────────────────────────────────────────────────────────
 if __name__ == "__main__":
     if args.play:
         play(args)
