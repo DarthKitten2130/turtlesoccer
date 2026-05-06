@@ -28,8 +28,8 @@ ARENA_Y_MIN, ARENA_Y_MAX = -4.5,  4.5
 
 ROBOT_SPAWN_X_RANGE = (-1.5,  0.0)
 ROBOT_SPAWN_Y_RANGE = (-1.5,  1.5)
-ROBOT_YAW_RANGE  = (-1.5,  1.5)   # was (-0.5, 0.5) — robot can start facing sideways
-BALL_DIST_RANGE  = ( 1.0,  5.0)   # was (1.0, 3.0)  — ball can be farther away
+ROBOT_YAW_RANGE     = (-0.5,  0.5)   # original
+BALL_DIST_RANGE     = ( 1.0,  3.0)
 
 WHEEL_SEPARATION = 0.287   # m
 WHEEL_RADIUS     = 0.033   # m
